@@ -14,7 +14,7 @@ public class Neuron {
 
     // Função de ativação (ReLU)
     public double activate(double input) {
-        return Math.max(0, input); // ReLU
+        return Math.tanh(input); // vai pegar no intervalo de [-1 , 1] pra ver qual o neuronio deve ser ativado
     }
 
     // Calcula a saída do neurônio dado as entradas

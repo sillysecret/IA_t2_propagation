@@ -16,28 +16,28 @@ public class Main {
             for (int i = 0; i < 90; i++){
                 if(i%10 == 0){
                     // Bias
-                    args[index++] = "0.1";
+                    args[index++] = String.valueOf((Math.random() * 2) - 1);
                 }else{
                     //pesos
-                    args[index++] = "0.2";
+                    args[index++] = String.valueOf((Math.random() * 2) - 1);
                 }
             }
             //valores da de saida
             for (int i = 0; i < 90; i++){
                 if(i%10 == 0){
                     // Bias
-                    args[index++] = "0.1";
+                    args[index++] = String.valueOf((Math.random() * 2) - 1);
                 }else{
                     //pesos
-                    args[index++] = "0.2";
+                    args[index++] = String.valueOf((Math.random() * 2) - 1);
                 }
             }
             // Valores de entrada
-            for (int i = 0; i < 9; i++) args[index++] = "1.0";
+            for (int i = 0; i < 9; i++) args[index++] = String.valueOf((Math.random() * 2) - 1);
         }
 
         if (args.length != 189) {
-            System.out.println("Por favor, forneça exatamente 189 parâmetros: 81 pesos e 9 biases para a camada oculta, 81 pesos e 9 biases para a camada de saída, e 9 valores de entrada.");
+            System.out.println("forneça exatamente 189 parâmetros: 81 pesos e 9 biases para a camada oculta, 81 pesos e 9 biases para a camada de saída, e 9 valores de entrada.");
             return;
         }
 
@@ -80,9 +80,15 @@ public class Main {
         double[] outputs = network.forward(inputs);
 
         // Exibe a saída
+        int biggestOneIndex = 0;
         System.out.println("Saída da rede:");
-        for (double output : outputs) {
-            System.out.println(output);
+        for (int i = 0; i < 9;i++) {
+            if(Math.abs(outputs[i])>Math.abs(outputs[biggestOneIndex]))
+                biggestOneIndex = i;
+
+            System.out.println(outputs[i]);
         }
+
+        System.out.println( "chosed neuron: "+ biggestOneIndex + " | value: " + outputs[biggestOneIndex]);
     }
 }
