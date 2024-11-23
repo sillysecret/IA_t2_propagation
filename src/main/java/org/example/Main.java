@@ -83,7 +83,7 @@ public class Main {
         int biggestOneIndex = 0;
         System.out.println("Saída da rede:");
         for (int i = 0; i < 9;i++) {
-            if(Math.abs(outputs[i])>Math.abs(outputs[biggestOneIndex]))
+            if((outputs[i])>(outputs[biggestOneIndex]))
                 biggestOneIndex = i;
 
             System.out.println(outputs[i]);
