@@ -1,152 +1,84 @@
 package dominio;
 
 import java.util.Random;
-import operacao.Algoritimo;
+import org.example.entity.NeuralNetwork;
+import tabuleiro.Tabuleiro;
 
-//Classe que define uma possível solução
 public class Individuo {
 
     private double aptidao;
-    private int[] posicoesY;
-    private Tabuleiro tabuleiro;
-    private int colisoes;
+    private double[] pesos;
 
-    public Individuo(boolean rainhasAleatorias) {
-        posicoesY = new int[Algoritimo.getN()];
-        tabuleiro = new Tabuleiro(Algoritimo.getN());
+    // Construtor da classe Individuo, inicializando a rede neural e os pesos
+    public Individuo(boolean redeNeuralAleatoria) {
+        pesos = new double[180];  // Cromossomo com 180 pesos
+        Random random = new Random();
 
-        for (int i = 0; i < posicoesY.length; i++) {
-            posicoesY[i] = -1;
-        }
-
-        for (int i = 0; i < posicoesY.length; i++) {
-            if (rainhasAleatorias) {
-                posicoesY[i] = this.gerarYAleatorioExclusivo();
-                tabuleiro.atualizaTabuleiro(posicoesY);
+        // Inicializa os pesos da rede neural aleatoriamente
+        if (redeNeuralAleatoria) {
+            for (int i = 0; i < pesos.length; i++) {
+                pesos[i] = random.nextDouble() * 2 - 1; // Valores entre -1 e 1
             }
         }
 
-        if (rainhasAleatorias) {
-            geraAptidao();
+        if (redeNeuralAleatoria) {
+            geraAptidao();  // Chama a função para calcular a aptidão
         }
     }
 
-    //Gera aleatóriamente um valor de Y sem colisões
-    public int gerarYAleatorioExclusivo() {
-        int y;
-        Random r;
-        boolean encontrou;
-
-        do {
-            r = new Random();
-            y = r.nextInt(Algoritimo.getN());
-            encontrou = false;
-
-            for (int i = 0; i < Algoritimo.getN(); i++) {
-                if (posicoesY[i] == y) {
-                    encontrou = true;
-                    break;
-                }
-            }
-
-        } while (encontrou);
-
-        return y;
-    }
-
-    //Gera a aptidão baseado no número de colisões
+    // Calcula a aptidão do indivíduo, simulando uma partida
     public void geraAptidao() {
-        this.colisoes = geraColisoes();
-        this.aptidao = colisoes;
+        this.aptidao = calcularAptidao();
     }
 
-    //adiciona uma rainha no tabuleiro
-    public void addRainha(int x, int y) {
-        Random r = new Random();
-        if (r.nextDouble() < Algoritimo.getTaxaDeMutacao()) {
-            y = gerarYAleatorioExclusivo();
+    // Função que avalia a aptidão, simulando uma partida de Jogo da Velha
+    public double calcularAptidao() {
+
+        NeuralNetwork network = new NeuralNetwork(pesos); 
+        Minimax minimax = new Minimax(); //tem que fazer
+        Tabuleiro tabuleiro = new Tabuleiro(3);  
+
+        // Simulação de uma partida até o final
+        while (!tabuleiro.verificaVencedor() && !tabuleiro.jogoEmpatado()) {
+            // Jogada do jogador 1 (usando Minimax para calcular a jogada)
+            int jogada1 = minimax.play(tabuleiro.getTabuleiro(), 1);  // Jogador X (1)
+            boolean resultado1 = tabuleiro.jogada(jogada1, 1);
+
+
+            // Verifica vitória após a jogada
+            if (tabuleiro.verificaVencedor()) {
+                this.aptidao = 1;  
+                break;
+            }
+
+            // Jogada do jogador 2 (oponente -1)
+            int jogada2 = minimax.play(tabuleiro.getTabuleiro(), -1);  // Jogador O (-1)
+            boolean resultado2 = tabuleiro.jogada(jogada2, -1);
+            if (!resultado2) {
+                this.aptidao = -100;  
+                break;
+            }
+
+            if (tabuleiro.verificaVencedor()) {
+                this.aptidao = -1;  
+                break;
+            }
         }
-        posicoesY[x] = y;
-        tabuleiro.atualizaTabuleiro(posicoesY);
+
+        // Se o jogo terminar empatado
+        if (!tabuleiro.verificaVencedor() && tabuleiro.jogoEmpatado()) {
+            this.aptidao = 0;  // Empate
+        }
+
+        return this.aptidao;  
     }
+
 
     public double getAptidao() {
         return aptidao;
     }
 
-    public Tabuleiro getTabuleiro() {
-        return tabuleiro;
-    }
-
-    public void setTabuleiro(Tabuleiro tabuleiro) {
-        this.tabuleiro = tabuleiro;
-    }
-
-    public int getColisoes() {
-        return colisoes;
-    }
-
-    public int geraColisoes() {
-        int x = 0;
-        int y = 0;
-        int tempx = 0;
-        int tempy = 0;
-
-        int conflicts = 0;
-        int dx[] = new int[]{-1, 1, -1, 1};
-        int dy[] = new int[]{-1, 1, 1, -1};
-        boolean done;
-
-        //Checa na horizontal
-        for (int i = 0; i < Algoritimo.getN(); i++) {
-            y = posicoesY[i];
-            if (y != -1) {
-                for (int j = 0; j < Algoritimo.getN(); j++) {
-                    if (posicoesY[j] == y && j != i) {
-                        conflicts++;
-                    }
-                }
-            }
-        }
-
-        //Checa nas diagonais
-        for (int i = 0; i < Algoritimo.getN(); i++) {
-            x = i;
-            y = this.posicoesY[i];
-            if (y != -1) {
-                for (int j = 0; j <= 3; j++) {
-                    tempx = x;
-                    tempy = y;
-                    done = false;
-                    while (!done) {
-                        tempx += dx[j];
-                        tempy += dy[j];
-                        if ((tempx < 0 || tempx >= Algoritimo.getN()) || (tempy < 0 || tempy >= Algoritimo.getN())) {
-                            done = true;
-                        } else {
-                            if (tabuleiro.getTabuleiro()[tempx][tempy]) {
-                                conflicts++;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-
-        return conflicts;
-    }
-
-    public int[] getPosicoesY() {
-        return posicoesY;
-    }
-
-    @Override
-    public String toString() {
-        String s = "";
-        for (int i = 0; i < Algoritimo.getN(); i++) {
-            s += "[" + i + "," + posicoesY[i] + "] ";
-        }
-        return s;
+    public double[] getPesos() {
+        return pesos;
     }
 }

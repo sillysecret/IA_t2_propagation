@@ -33,6 +33,7 @@ public class Main {
                 }
             }
             // Valores de entrada
+
             for (int i = 0; i < 9; i++) args[index++] = String.valueOf((Math.random() * 2) - 1);
         }
 
@@ -40,36 +41,9 @@ public class Main {
             System.out.println("forneça exatamente 189 parâmetros: 81 pesos e 9 biases para a camada oculta, 81 pesos e 9 biases para a camada de saída, e 9 valores de entrada.");
             return;
         }
-
-        int index = 0;
-        List<Layer> layers = new ArrayList<>();
-
-        // Cria a camada oculta com 9 neurônios, cada um com 9 pesos e 1 bias
-        List<Neuron> hiddenNeurons = new ArrayList<>();
-        for (int i = 0; i < 9; i++) {
-            double[] weights = new double[9];
-            double bias = Double.parseDouble(args[index++]);
-            for (int j = 0; j < 9; j++) {
-                weights[j] = Double.parseDouble(args[index++]);
-            }
-            hiddenNeurons.add(new Neuron(weights, bias));
-        }
-        layers.add(new Layer(hiddenNeurons));
-
-        // Cria a camada de saída com 9 neurônios, cada um com 9 pesos e 1 bias
-        List<Neuron> outputNeurons = new ArrayList<>();
-        for (int i = 0; i < 9; i++) {
-            double[] weights = new double[9];
-            double bias = Double.parseDouble(args[index++]);
-            for (int j = 0; j < 9; j++) {
-                weights[j] = Double.parseDouble(args[index++]);
-            }
-            outputNeurons.add(new Neuron(weights, bias));
-        }
-        layers.add(new Layer(outputNeurons));
-
-        NeuralNetwork network = new NeuralNetwork(layers);
-
+        //troquei para double 
+        //NeuralNetwork network = new NeuralNetwork(args);
+        int index = args.length - 9;
         // Entrada de teste com 9 valores
         double[] inputs = new double[9];
         for (int i = 0; i < 9; i++) {
