@@ -13,40 +13,35 @@ public class Individuo {
     private double[] pesos;
     private Tabuleiro tabuleiro;
 
-    // Construtor da classe Individuo, inicializando a rede neural e os pesos
-    public Individuo(boolean redeNeuralAleatoria) {
-        pesos = new double[180];  // Cromossomo com 180 pesos
+    public Individuo(boolean redeNeuralAleatoria, int difficultyLevel) {
+        pesos = new double[237];
         Random random = new Random();
 
         // Inicializa os pesos da rede neural aleatoriamente
         if (redeNeuralAleatoria) {
             for (int i = 0; i < pesos.length; i++) {
-                pesos[i] = random.nextDouble() * 2; // Valores entre -1 e 1
+                pesos[i] = random.nextInt(1000) ;
             }
         }
         if (redeNeuralAleatoria) {
-            geraAptidao();
+            geraAptidao(difficultyLevel);
         }
     }
 
     // Calcula a aptidão do indivíduo, simulando uma partida
-    public void geraAptidao() {
-        this.aptidao = calcularAptidao();
+    public void geraAptidao(int difficultyLevel) {
+        this.aptidao = calcularAptidao(difficultyLevel);
     }
 
-    // Função que avalia a aptidão, simulando uma partida de Jogo da Velha
-    public double calcularAptidao() {
-
-        NeuralNetwork network = new NeuralNetwork(pesos); 
-        TicTacToeAI minimax = new TicTacToeAI();
+    public double calcularAptidao(int difficultyLevel) {
+        NeuralNetwork network = new NeuralNetwork(pesos);
         Tabuleiro tabuleiro = new Tabuleiro();
-
         int numeroDeJogadas = 0;
-        // Simulação de uma partida até o final
-        while (!tabuleiro.verificaVencedor() && !tabuleiro.jogoEmpatado()) {
-            //usa rede para fazer a jogada
-            int jogada1 = network.forward(tabuleiro.getArrayTabuleiro());  // redeneural X (1)
+        int minimaxTurns = 0;
+        int movesPerCycle = 4; // Every cycle has 4 moves
 
+        while (!tabuleiro.verificaVencedor() && !tabuleiro.jogoEmpatado()) {
+            int jogada1 = network.forward(tabuleiro.getArrayTabuleiro());
             boolean resultado1 = tabuleiro.jogada(jogada1, 1);
             numeroDeJogadas++;
 
@@ -55,40 +50,43 @@ public class Individuo {
                 break;
             }
 
-            // Verifica vitória após a jogada
             if (tabuleiro.verificaVencedor()) {
-                this.aptidao = 1;  
+                this.aptidao = 1;
                 break;
             }
 
-            if(numeroDeJogadas == 1 || numeroDeJogadas == 3){
-                // Jogada do jogador 2 (oponente -1)
-                int jogada2 = TicTacToeAI.findBestMove(tabuleiro.getArrayTabuleiroInt());  // minimax O (-1)
-                boolean resultado2 = tabuleiro.jogada(jogada2, -1);
-            }else {
-                //usa um numero aleatorio para fazer a jogada entre 0 a 8;
+            int jogada2;
+            if (minimaxTurns < difficultyLevel) {
+                jogada2 = TicTacToeAI.findBestMove(tabuleiro.getArrayTabuleiroInt());
+                minimaxTurns++;
+            } else {
                 Random random = new Random();
-                int jogada2 = random.nextInt(9);
-                boolean resultado2 = tabuleiro.jogada(jogada2, -1);
+                do {
+                    jogada2 = random.nextInt(9);
+                } while (!tabuleiro.estaLivre(jogada2));
             }
 
+            boolean resultado2 = tabuleiro.jogada(jogada2, -1);
             numeroDeJogadas++;
 
-            //verifica se o minimax venceu apos a jogada
+            if (numeroDeJogadas % movesPerCycle == 0) {
+                minimaxTurns = 0;
+            }
+
             if (tabuleiro.verificaVencedor()) {
                 this.aptidao = -1 + numeroDeJogadas * 0.1;
                 break;
             }
+        }
 
+        if (tabuleiro.jogoEmpatado()) {
+            this.aptidao = 0;
         }
-        // Se o jogo terminar empatado
-        if (!tabuleiro.verificaVencedor() && tabuleiro.jogoEmpatado()) {
-            this.aptidao = 0;  // Empate
-        }
-        //System.out.println(tabuleiro.toString());
+
         this.tabuleiro = tabuleiro;
-        return this.aptidao;  
+        return this.aptidao;
     }
+
 
 
     public double getAptidao() {

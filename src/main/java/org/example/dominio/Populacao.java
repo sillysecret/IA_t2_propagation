@@ -9,15 +9,15 @@ public class Populacao {
     private Individuo[] individuos;
     private int tamPopulacao;
 
-    public Populacao(int tamPop, boolean individuosAleatorios) {
+    public Populacao(int tamPop, boolean individuosAleatorios,int dificuldade) {
         tamPopulacao = tamPop;
         individuos = new Individuo[tamPop];
 
         for (int i = 0; i < individuos.length; i++) {
             if (individuosAleatorios) {
-                individuos[i] = new Individuo(true); // Inicializa com indivíduos aleatórios
+                individuos[i] = new Individuo(true,dificuldade);
             } else {
-                individuos[i] = null; // Espaços vazios na população
+                individuos[i] = null;
             }
         }
     }

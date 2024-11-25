@@ -113,12 +113,38 @@ public class TicTacToeAI {
         }
     }
 
+    public static void playerMoveAgainstMLP(int[] board) {
+        Scanner scanner = new Scanner(System.in);
+        int move = -1;
+
+        // Solicita uma jogada válida
+        while (true) {
+            System.out.print("Escolha uma posição (0-8): ");
+            move = scanner.nextInt();
+
+            if (move >= 0 && move <= 8 && board[move] == 0) {
+                board[move] = -1;
+                break;
+            } else {
+                System.out.println("Movimento inválido! Tente novamente.");
+            }
+        }
+    }
+
     // Método para imprimir o tabuleiro
     public static void printBoard(int[] board) {
         String[] symbols = { " ", "X", "O" }; // 0 é vazio, 1 é jogador (X), -1 é computador (O)
         System.out.println();
         for (int i = 0; i < 9; i++) {
-            System.out.print(symbols[board[i]]);
+            int jogada = board[i];
+            if(jogada == 0) {
+                System.out.print(" ");
+            } else if (jogada == 1) {
+                System.out.print("X");
+            } else {
+                System.out.print("O");
+            }
+
             if (i % 3 == 2) {
                 System.out.println();
             } else {
@@ -128,8 +154,10 @@ public class TicTacToeAI {
         System.out.println();
     }
 
+
+
     // Função principal para jogar o jogo
-    public static void playGame() {
+    public static void playGameAgainstMinMax() {
         int[] board = new int[9]; // 0 = vazio, 1 = jogador, -1 = computador
         int winner = 0;
 
@@ -143,15 +171,52 @@ public class TicTacToeAI {
             winner = evaluate(board);
             if (winner != 0) break;
 
-            // Exibe o tabuleiro após a jogada do jogador
+
             printBoard(board);
 
-            // Turno do computador
             computerMove(board);
             winner = evaluate(board);
         }
 
-        // Exibe o resultado final
+
+        printBoard(board);
+        if (winner == 1) {
+            System.out.println("Parabéns! Você venceu!");
+        } else if (winner == -1) {
+            System.out.println("O computador venceu. Tente novamente!");
+        } else {
+            System.out.println("Empate!");
+        }
+    }
+
+    public static void playGameAgainstMLP(double[] pesos) {
+        int[] board = new int[9]; // 0 = vazio, 1 = jogador, -1 = computador
+        int winner = 0;
+        NeuralNetwork network = new NeuralNetwork(pesos);
+
+        // Loop principal do jogo
+        while (winner == 0 && checkAvailability(board)) {
+
+            printBoard(board);
+
+
+            double[] boardDouble = new double[9];
+            for (int i = 0; i < 9; i++) {
+                boardDouble[i] = board[i];
+            }
+
+            int jogada = network.forward(boardDouble);
+            board[jogada] = 1;
+
+            printBoard(board);
+            playerMoveAgainstMLP(board);
+            winner = evaluate(board);
+            if (winner != 0) break;
+
+            winner = evaluate(board);
+        }
+
+
         printBoard(board);
         if (winner == 1) {
             System.out.println("Parabéns! Você venceu!");
@@ -163,6 +228,6 @@ public class TicTacToeAI {
     }
 
     public static void main(String[] args) {
-        playGame(); // Inicia o jogo
+        playGameAgainstMinMax(); // Inicia o jogo
     }
 }
