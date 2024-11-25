@@ -2,24 +2,20 @@ package org.example;
 
 import org.example.operacao.Algoritimo;
 
-import javax.swing.SwingUtilities;
-
 public class Main {
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                ihm.Frame frame = new ihm.Frame();
-                // Chama o algoritmo genético
-                Algoritimo.setN(9);
-                Algoritimo.setTaxaDeCrossover(0.7);
-                Algoritimo.setTaxaDeMutacao(0.01);
-                Algoritimo.setNumeroMaximoGeracoes(1000);
-                Algoritimo.setTamanhoPopulacao(50);
-                Algoritimo.setElitismo(true);
-                
-                Algoritimo.AG(frame);
-            }
-        });
+        // Chama o algoritmo genético diretamente no console
+        Algoritimo.setN(9);
+        Algoritimo.setTaxaDeCrossover(0.9);
+        Algoritimo.setTaxaDeMutacao(0.05);
+        Algoritimo.setNumeroMaximoGeracoes(5000000);
+        Algoritimo.setTamanhoPopulacao(250);
+        Algoritimo.setElitismo(true);
+
+        // Executa o algoritmo genético
+        Algoritimo.AG();
+
+        // Exibe algum feedback no console após a execução, se necessário
+        System.out.println("Algoritmo genético executado com sucesso!");
     }
 }

@@ -38,8 +38,7 @@ public class Populacao {
     }
 
     public void ordenaPopulacao() {
-        // Usa Arrays.sort() com um comparador baseado na aptidão
-        Arrays.sort(individuos, Comparator.nullsLast(Comparator.comparingDouble(Individuo::getAptidao)));
+        Arrays.sort(individuos, Comparator.nullsLast(Comparator.comparingDouble(Individuo::getAptidao).reversed()));
     }
 
     public int getNumIndividuos() {
