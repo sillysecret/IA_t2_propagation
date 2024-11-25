@@ -1,13 +1,16 @@
-package dominio;
+package org.example.dominio;
 
 import java.util.Random;
+
+import org.example.entity.Minimax;
 import org.example.entity.NeuralNetwork;
-import tabuleiro.Tabuleiro;
+
 
 public class Individuo {
 
     private double aptidao;
     private double[] pesos;
+    private Tabuleiro tabuleiro;
 
     // Construtor da classe Individuo, inicializando a rede neural e os pesos
     public Individuo(boolean redeNeuralAleatoria) {
@@ -20,9 +23,8 @@ public class Individuo {
                 pesos[i] = random.nextDouble() * 2 - 1; // Valores entre -1 e 1
             }
         }
-
         if (redeNeuralAleatoria) {
-            geraAptidao();  // Chama a função para calcular a aptidão
+            geraAptidao();
         }
     }
 
@@ -40,10 +42,14 @@ public class Individuo {
 
         // Simulação de uma partida até o final
         while (!tabuleiro.verificaVencedor() && !tabuleiro.jogoEmpatado()) {
-            // Jogada do jogador 1 (usando Minimax para calcular a jogada)
-            int jogada1 = minimax.play(tabuleiro.getTabuleiro(), 1);  // Jogador X (1)
+            //usa rede para fazer a jogada
+            int jogada1 = network.forward(tabuleiro.getArrayTabuleiro());  // redeneural X (1)
             boolean resultado1 = tabuleiro.jogada(jogada1, 1);
 
+            if (!resultado1) {
+                this.aptidao = -100;
+                break;
+            }
 
             // Verifica vitória após a jogada
             if (tabuleiro.verificaVencedor()) {
@@ -52,24 +58,24 @@ public class Individuo {
             }
 
             // Jogada do jogador 2 (oponente -1)
-            int jogada2 = minimax.play(tabuleiro.getTabuleiro(), -1);  // Jogador O (-1)
+            int jogada2 = minimax.findBestMove(tabuleiro.getArrayTabuleiro());  // minimax O (-1)
             boolean resultado2 = tabuleiro.jogada(jogada2, -1);
             if (!resultado2) {
                 this.aptidao = -100;  
                 break;
             }
-
+            //verifica se o minimax venceu apos a jogada
             if (tabuleiro.verificaVencedor()) {
                 this.aptidao = -1;  
                 break;
             }
         }
-
         // Se o jogo terminar empatado
         if (!tabuleiro.verificaVencedor() && tabuleiro.jogoEmpatado()) {
             this.aptidao = 0;  // Empate
         }
 
+        this.tabuleiro = tabuleiro;
         return this.aptidao;  
     }
 
@@ -78,6 +84,12 @@ public class Individuo {
         return aptidao;
     }
 
+    public void setPesos(double[] pesos) {
+        this.pesos = pesos;
+    }
+    public Tabuleiro getTabuleiro() {
+        return tabuleiro;
+    }
     public double[] getPesos() {
         return pesos;
     }

@@ -38,12 +38,21 @@ public class NeuralNetwork {
     }
 
     // Propaga as entradas pela rede
-    public double[] forward(double[] inputs) {
+    public int forward(double[] inputs) {
         double[] outputs = inputs;
         //pega a primeira camada e passa os inputs
         for (Layer layer : layers) {
             outputs = layer.forward(outputs);
         }
-        return outputs;
+
+        //pega o index do maior valor
+        var biggestOneIndex = 0;
+        for (int i = 0; i < 9; i++) {
+            if (outputs[i] > outputs[biggestOneIndex]) {
+                biggestOneIndex = i;
+            }
+        }
+
+        return biggestOneIndex;
     }
 }

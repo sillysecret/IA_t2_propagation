@@ -1,16 +1,17 @@
 package ihm;
 
-import dominio.Tabuleiro;
+import org.example.dominio.Tabuleiro;
 import java.awt.BorderLayout;
 import javax.swing.GroupLayout;
 import javax.swing.JPanel;
 import javax.swing.SpinnerNumberModel;
-import operacao.Algoritimo;
+import org.example.operacao.Algoritimo;
+import org.example.ihm.TabuleiroVisual;
 
 public class Frame extends javax.swing.JFrame {
 
     private TabuleiroVisual tabuleiroVisual;
-    private Chart chart;
+    private ihm.Chart chart;
 
     public Frame() {
         super("AG - Problema das N-Rainhas");
@@ -21,7 +22,7 @@ public class Frame extends javax.swing.JFrame {
         painelAbas.setTitleAt(0, "Tabuleiro");
         painelAbas.setTitleAt(1, "Gráfico");
 
-        chart = new Chart(painelGrafico.getWidth(), painelGrafico.getHeight());
+        chart = new ihm.Chart(painelGrafico.getWidth(), painelGrafico.getHeight());
         addGraphic(chart.getImage());
 
         SpinnerNumberModel spnmMutationRate = new SpinnerNumberModel(0.01, 0.01, 1, 0.01);
@@ -273,7 +274,7 @@ public class Frame extends javax.swing.JFrame {
         IniciarBotao.setEnabled(estado);
     }
 
-    public Chart getChart() {
+    public ihm.Chart getChart() {
         return chart;
     }
 

@@ -1,8 +1,10 @@
-package operacao;
+package org.example.operacao;
 
-import dominio.Individuo;
-import dominio.Populacao;
+
 import ihm.Frame;
+import org.example.dominio.Individuo;
+import org.example.dominio.Populacao;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -61,23 +63,24 @@ public class Algoritimo {
         filhos[0] = new Individuo(false);
         filhos[1] = new Individuo(false);
 
-        int pontoCorte = r.nextInt(Algoritimo.N);
-
-        for (int i = 0; i < Algoritimo.N; i++) {
-            if (i < pontoCorte) {
-                filhos[0].addRainha(i, pai1.getPosicoesY()[i]);
-                filhos[1].addRainha(i, pai2.getPosicoesY()[i]);
-            } else {
-                filhos[0].addRainha(i, pai2.getPosicoesY()[i]);
-                filhos[1].addRainha(i, pai1.getPosicoesY()[i]);
-            }
+        double[] cromossomo1 = pai1.getPesos();
+        double[] cromossomo2 = pai2.getPesos();
+        double[] mediaGeometrica = new double[180];
+        double[] mediaAritmetica = new double[180];
+        for(int i = 0; i < 180;i++){
+            mediaGeometrica[i] = Math.sqrt(cromossomo1[i]*cromossomo2[i]);
+            mediaAritmetica[i] = (cromossomo1[i]+cromossomo2[i])/2;
         }
+
+        filhos[0].setPesos(mediaGeometrica);
+        filhos[1].setPesos(mediaAritmetica);
 
         filhos[0].geraAptidao();
         filhos[1].geraAptidao();
 
         return filhos;
     }
+
 
     public static Individuo selecaoTorneio(Populacao populacao) {
         Random r = new Random();
@@ -189,6 +192,8 @@ public class Algoritimo {
         Algoritimo.elitismo = elitismo;
     }
 
+
+
     private static class ExecutaAG implements Runnable {
 
         private Frame frame;
@@ -207,9 +212,9 @@ public class Algoritimo {
             Populacao populacao = new Populacao(getTamanhoPopulacao(), true);
             populacao.ordenaPopulacao();
             frame.setLog("Geração " + geracao + ":\n"
-                    + "Melhor: " + populacao.getIndivduo(0).getAptidao() + " (" + populacao.getIndivduo(0).getColisoes() + ")" + "\n"
+                    + "Melhor: " + populacao.getIndivduo(0).getAptidao() + " (" + populacao.getIndivduo(0).getAptidao() + ")" + "\n"
                     + "Média: " + populacao.getMediaAptidao() + "\n"
-                    + "Pior: " + populacao.getIndivduo(populacao.getNumIndividuos() - 1).getAptidao() + "(" + populacao.getIndivduo(populacao.getNumIndividuos() - 1).getColisoes() + ")" + "\n"
+                    + "Pior: " + populacao.getIndivduo(populacao.getNumIndividuos() - 1).getAptidao() + "(" + populacao.getIndivduo(populacao.getNumIndividuos() - 1).getAptidao() + ")" + "\n"
                     + "-------------------------------------");
 
             frame.getTabuleiroVisual().setTabuleiro(populacao.getIndivduo(0).getTabuleiro());
@@ -220,9 +225,9 @@ public class Algoritimo {
                 populacao = Algoritimo.novaGeracao(populacao);
 
                 frame.setLog("Geração " + geracao + ":\n"
-                        + "Melhor: " + populacao.getIndivduo(0).getAptidao() + " (" + populacao.getIndivduo(0).getColisoes() + ")" + "\n"
+                        + "Melhor: " + populacao.getIndivduo(0).getAptidao() + " (" + populacao.getIndivduo(0).getAptidao() + ")" + "\n"
                         + "Média: " + populacao.getMediaAptidao() + "\n"
-                        + "Pior: " + populacao.getIndivduo(populacao.getNumIndividuos() - 1).getAptidao() + "(" + populacao.getIndivduo(populacao.getNumIndividuos() - 1).getColisoes() + ")" + "\n"
+                        + "Pior: " + populacao.getIndivduo(populacao.getNumIndividuos() - 1).getAptidao() + "(" + populacao.getIndivduo(populacao.getNumIndividuos() - 1).getAptidao() + ")" + "\n"
                         + "-------------------------------------");
 
 
@@ -231,7 +236,7 @@ public class Algoritimo {
                 }
 
 
-                if (populacao.getIndivduo(0).getColisoes() == 0) {
+                if (populacao.getIndivduo(0).getAptidao() == 0) {
                     frame.setLog("SOLUÇÃO ENCONTRADA!");
                     frame.getChart().update(geracao, populacao.getIndivduo(0).getAptidao(), populacao.getMediaAptidao(), populacao.getIndivduo(populacao.getNumIndividuos() - 1).getAptidao());
                     break;
@@ -241,7 +246,6 @@ public class Algoritimo {
             frame.getTabuleiroVisual().setTabuleiro(populacao.getIndivduo(0).getTabuleiro());
 
             frame.setEstadoIniciarBotao(true);
-
         }
     }
 }

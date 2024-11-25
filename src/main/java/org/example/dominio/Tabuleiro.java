@@ -1,4 +1,4 @@
-package tabuleiro;
+package org.example.dominio;
 
 public class Tabuleiro {
 
@@ -97,7 +97,23 @@ public class Tabuleiro {
         return r.toString();
     }
 
-    public int[][] getTabuleiro() {
+    public double[] getArrayTabuleiro() {
+        int rows = tabuleiro.length;
+        int cols = tabuleiro[0].length;
+
+        double[] flatTabuleiro = new double[rows * cols];
+        int index = 0;
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                flatTabuleiro[index++] = tabuleiro[i][j];
+            }
+        }
+
+        return flatTabuleiro;
+    }
+
+    public int[][] getTabuleiroMatriz() {
         return tabuleiro;
     }
 }
