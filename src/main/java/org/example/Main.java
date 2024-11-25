@@ -7,9 +7,9 @@ public class Main {
         // Chama o algoritmo genético diretamente no console
         Algoritimo.setN(9);
         Algoritimo.setTaxaDeCrossover(0.9);
-        Algoritimo.setTaxaDeMutacao(0.05);
-        Algoritimo.setNumeroMaximoGeracoes(5000000);
-        Algoritimo.setTamanhoPopulacao(250);
+        Algoritimo.setTaxaDeMutacao(0.5);
+        Algoritimo.setNumeroMaximoGeracoes(50000);
+        Algoritimo.setTamanhoPopulacao(150);
         Algoritimo.setElitismo(true);
 
         // Executa o algoritmo genético

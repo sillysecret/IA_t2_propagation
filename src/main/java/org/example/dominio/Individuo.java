@@ -72,8 +72,6 @@ public class Individuo {
                 boolean resultado2 = tabuleiro.jogada(jogada2, -1);
             }
 
-
-
             numeroDeJogadas++;
 
             //verifica se o minimax venceu apos a jogada

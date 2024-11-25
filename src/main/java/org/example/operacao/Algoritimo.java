@@ -45,9 +45,13 @@ public class Algoritimo {
             System.out.println("-------------------------------------");
 
             if (populacao.getMediaAptidao() == 0) {
+                System.out.println("Melhor indivíduo: " + Arrays.toString(populacao.getIndivduo(0).getPesos()));
                 break;
             }
+
+
         }
+        System.out.println("Melhor indivíduo: " + Arrays.toString(populacao.getIndivduo(0).getPesos()));
     }
 
     public static Populacao novaGeracao(Populacao populacao) {
@@ -61,36 +65,31 @@ public class Algoritimo {
         for (int i = 0; i < novaPopulacao.getTamPopulacao(); i++) {
 
             Individuo pais[] = new Individuo[2];
-            Individuo filhos[] = new Individuo[2];
+            Individuo filho;
 
             pais[0] = selecaoTorneio(populacao);
             pais[1] = selecaoTorneio(populacao);
 
             r = new Random();
             if (r.nextDouble() <= taxaDeCrossover) {
-                filhos = Algoritimo.crossover(pais[0], pais[1]);
-                filhos[0].geraAptidao();
-                filhos[1].geraAptidao();
+                filho = Algoritimo.crossover(pais[0], pais[1]);
             } else {
-                filhos[0] = pais[0];
-                filhos[1] = pais[1];
+                filho = pais[0];
             }
 
             // Mutação a cada 100 indivíduos
-            if (i % 100 == 0) {
-                mutacao(filhos[0]);
-                mutacao(filhos[1]);
+            if (i % 25 == 0) {
+               filho = mutacao(filho);
             }
 
-            novaPopulacao.setIndividuo(filhos[0]);
-            novaPopulacao.setIndividuo(filhos[1]);
+            novaPopulacao.setIndividuo(filho);
         }
 
         novaPopulacao.ordenaPopulacao();
         return novaPopulacao;
     }
 
-    public static Individuo[] crossover(Individuo pai1, Individuo pai2) {
+    public static Individuo crossover(Individuo pai1, Individuo pai2) {
         Random r = new Random();
         Individuo filhos[] = new Individuo[2];
 
@@ -100,28 +99,25 @@ public class Algoritimo {
         double[] cromossomo1 = pai1.getPesos();
         double[] cromossomo2 = pai2.getPesos();
         double[] mediaGeometrica = new double[180];
-        double[] mediaAritmetica = new double[180];
         for (int i = 0; i < 180; i++) {
             mediaGeometrica[i] = Math.sqrt(cromossomo1[i] * cromossomo2[i]);
-            mediaAritmetica[i] = (cromossomo1[i] + cromossomo2[i]) / 2;
+
         }
 
         filhos[0].setPesos(mediaGeometrica);
-        filhos[1].setPesos(mediaAritmetica);
 
         filhos[0].geraAptidao();
-        filhos[1].geraAptidao();
 
-        return filhos;
+        return filhos[0];
     }
 
     public static Individuo selecaoTorneio(Populacao populacao) {
         Random r = new Random();
         Populacao populacaoIntermediaria = new Populacao(2, false);
 
-        populacaoIntermediaria.setIndividuo(populacao.getIndivduo(r.nextInt(populacao.getTamPopulacao())));
+        populacaoIntermediaria.setIndividuo(populacao.getIndivduo(r.nextInt(populacao.getTamPopulacao()/2)));
         r = new Random();
-        populacaoIntermediaria.setIndividuo(populacao.getIndivduo(r.nextInt(populacao.getTamPopulacao())));
+        populacaoIntermediaria.setIndividuo(populacao.getIndivduo(r.nextInt(populacao.getTamPopulacao()/2)));
 
         populacaoIntermediaria.ordenaPopulacao();
 
@@ -141,7 +137,7 @@ public class Algoritimo {
         double[] cromossomo = individuo.getPesos();
 
         for (int i = 0; i < cromossomo.length; i++) {
-            cromossomo[i] = cromossomo[i] + r.nextGaussian() * taxaDeMutacao;
+            cromossomo[i] = cromossomo[i] + r.nextDouble(5) ;
         }
 
         individuo.setPesos(cromossomo);
