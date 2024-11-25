@@ -33,26 +33,25 @@ public class Tabuleiro {
     }
 
     public boolean verificaVencedor() {
-        // Verifica linhas
+
         for (int i = 0; i < tamanho; i++) {
             if (tabuleiro[i * tamanho] == tabuleiro[i * tamanho + 1] && tabuleiro[i * tamanho + 1] == tabuleiro[i * tamanho + 2] && tabuleiro[i * tamanho] != 0) {
-                return true; // Linha vencedora
+                return true;
             }
         }
 
-        // Verifica colunas
+
         for (int i = 0; i < tamanho; i++) {
             if (tabuleiro[i] == tabuleiro[i + tamanho] && tabuleiro[i + tamanho] == tabuleiro[i + 2 * tamanho] && tabuleiro[i] != 0) {
-                return true; // Coluna vencedora
+                return true;
             }
         }
 
-        // Verifica diagonais
         if (tabuleiro[0] == tabuleiro[4] && tabuleiro[4] == tabuleiro[8] && tabuleiro[0] != 0) {
-            return true; // Diagonal principal vencedora
+            return true;
         }
         if (tabuleiro[2] == tabuleiro[4] && tabuleiro[4] == tabuleiro[6] && tabuleiro[2] != 0) {
-            return true; // Diagonal secundária vencedora
+            return true;
         }
 
         return false;

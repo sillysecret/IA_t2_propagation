@@ -11,7 +11,6 @@ public class Layer {
         this.neurons = neurons;
     }
 
-    // Calcula a saída da camada dada as entradas
     public double[] forward(double[] inputs) {
         double[] outputs = new double[neurons.size()];
         for (int i = 0; i < neurons.size(); i++) {

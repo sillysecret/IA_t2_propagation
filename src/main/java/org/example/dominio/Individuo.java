@@ -38,7 +38,7 @@ public class Individuo {
         Tabuleiro tabuleiro = new Tabuleiro();
         int numeroDeJogadas = 0;
         int minimaxTurns = 0;
-        int movesPerCycle = 4; // Every cycle has 4 moves
+        double preaptidao = 0;
 
         while (!tabuleiro.verificaVencedor() && !tabuleiro.jogoEmpatado()) {
             int jogada1 = network.forward(tabuleiro.getArrayTabuleiro());
@@ -46,12 +46,12 @@ public class Individuo {
             numeroDeJogadas++;
 
             if (!resultado1) {
-                this.aptidao = -18 + numeroDeJogadas;
+                this.aptidao = preaptidao + (-18 + numeroDeJogadas);
                 break;
             }
 
             if (tabuleiro.verificaVencedor()) {
-                this.aptidao = 1;
+                this.aptidao =  preaptidao + 2;
                 break;
             }
 
@@ -69,24 +69,20 @@ public class Individuo {
             boolean resultado2 = tabuleiro.jogada(jogada2, -1);
             numeroDeJogadas++;
 
-            if (numeroDeJogadas % movesPerCycle == 0) {
-                minimaxTurns = 0;
-            }
 
             if (tabuleiro.verificaVencedor()) {
-                this.aptidao = -1 + numeroDeJogadas * 0.1;
+                this.aptidao =  preaptidao + (-1 + numeroDeJogadas * 0.1);
                 break;
             }
         }
 
         if (tabuleiro.jogoEmpatado()) {
-            this.aptidao = 0;
+            this.aptidao = preaptidao + 1;
         }
 
         this.tabuleiro = tabuleiro;
         return this.aptidao;
     }
-
 
 
     public double getAptidao() {

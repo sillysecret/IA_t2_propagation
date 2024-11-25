@@ -10,9 +10,9 @@ public class NeuralNetwork {
         int index = 0;
         List<Layer> layers = new ArrayList<>();
 
-        // Cria a camada oculta com 12 neurônios, cada um com 9 pesos e 1 bias
+
         List<Neuron> hiddenNeurons = new ArrayList<>();
-        for (int i = 0; i < 12; i++) {  // Alterado de 9 para 12 neurônios
+        for (int i = 0; i < 12; i++) {
             double[] weights = new double[9];
             double bias = args[index++];
             for (int j = 0; j < 9; j++) {
@@ -22,10 +22,10 @@ public class NeuralNetwork {
         }
         layers.add(new Layer(hiddenNeurons));
 
-        // Cria a camada de saída com 9 neurônios, cada um com 12 pesos e 1 bias
+
         List<Neuron> outputNeurons = new ArrayList<>();
-        for (int i = 0; i < 9; i++) {  // Camada de saída continua com 9 neurônios
-            double[] weights = new double[12];  // Alterado de 9 para 12, pois agora a camada oculta tem 12 neurônios
+        for (int i = 0; i < 9; i++) {
+            double[] weights = new double[12];
             double bias = args[index++];
             for (int j = 0; j < 12; j++) {
                 weights[j] = args[index++];
@@ -37,15 +37,13 @@ public class NeuralNetwork {
         this.layers = layers;
     }
 
-    // Propaga as entradas pela rede
+
     public int forward(double[] inputs) {
         double[] outputs = inputs;
-        //pega a primeira camada e passa os inputs
         for (Layer layer : layers) {
             outputs = layer.forward(outputs);
         }
 
-        //pega o index do maior valor
         var biggestOneIndex = 0;
         for (int i = 0; i < 9; i++) {
             if (outputs[i] > outputs[biggestOneIndex]) {

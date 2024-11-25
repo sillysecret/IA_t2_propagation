@@ -17,7 +17,6 @@ public class Algoritimo {
 
     private static int dificuldade;
     public static double[] AG() {
-        // Executa o algoritmo genético diretamente, sem interface gráfica
         int geracao = 1;
 
         Populacao populacao = new Populacao(getTamanhoPopulacao(), true,dificuldade);
@@ -35,19 +34,19 @@ public class Algoritimo {
             populacao = Algoritimo.novaGeracao(populacao,geracao);
 
             if(geracao == getNumeroMaximoGeracoes()/2)
-                dificuldade = 3;
+                dificuldade = 5;
 
             if (geracao == (int)(getNumeroMaximoGeracoes() * 0.75))
                 dificuldade = 9;
 
             System.out.println("Geração " + geracao + ":");
             System.out.println("Melhor: " + populacao.getIndivduo(0).getAptidao() + " (" + populacao.getIndivduo(0).getAptidao() + ")");
-            //System.out.println("Pessos do melhor: " + Arrays.toString(populacao.getIndivduo(0).getPesos()));
             System.out.println("Média: " + populacao.getMediaAptidao());
             System.out.println("Pior: " + populacao.getIndivduo(populacao.getNumIndividuos() - 1).getAptidao() + " (" + populacao.getIndivduo(populacao.getNumIndividuos() - 1).getAptidao() + ")");
             for (int i = 0; i < populacao.getTamPopulacao(); i++) {
                 System.out.print(populacao.getIndivduo(i).getAptidao() + " ");
             }
+            System.out.println();
             System.out.println("-------------------------------------");
 
             if (populacao.getMediaAptidao() == 0) {
@@ -86,8 +85,7 @@ public class Algoritimo {
 
             // Mutação a cada 100 indivíduos
             if (i % 25 == 0) {
-                mutacao(filho);
-
+                mutacao(filho, geracao, getNumeroMaximoGeracoes());
             }
 
             novaPopulacao.setIndividuo(filho);
@@ -106,11 +104,8 @@ public class Algoritimo {
         double[] cromossomo2 = pai2.getPesos();
         double[] pesosFilho1 = new double[237];
 
-
         for (int i = 0; i < 237; i++) {
-            // Calculando a média geométrica para cada gene
             pesosFilho1[i] = Math.sqrt(cromossomo1[i] * cromossomo2[i]);
-
         }
 
         filhos.setPesos(pesosFilho1);
@@ -120,46 +115,53 @@ public class Algoritimo {
     }
 
 
-    public static Individuo selecaoTorneio(Populacao populacao,int geracao) {
-        Random r = new Random();
-        Populacao populacaoIntermediaria = new Populacao(2, false,dificuldade);
+    public static Individuo selecaoTorneio(Populacao populacao, int geracao) {
+        Random random = new Random();
+        int tamanhoPopulacao = populacao.getTamPopulacao();
         int limite;
-        int indice;
-        if(geracao > getNumeroMaximoGeracoes()/2){
-            limite = populacao.getTamPopulacao();
-            indice = r.nextInt(limite);
-        }else{
-            limite = r.nextDouble() < 0.3 ? populacao.getTamPopulacao() : populacao.getTamPopulacao() / 4;
-            indice = r.nextInt(limite);
-        }
-        populacaoIntermediaria.setIndividuo(populacao.getIndivduo(indice));
 
-        populacaoIntermediaria.setIndividuo(populacao.getIndivduo(indice));
-
-        populacaoIntermediaria.ordenaPopulacao();
-
-        int pos;
-
-        r = new Random();
-        if (populacaoIntermediaria.getIndivduo(0).getAptidao() >= populacaoIntermediaria.getIndivduo(1).getAptidao()) {
-            pos = 0;
+        // Definir limite de seleção baseado na geração
+        if (geracao < getNumeroMaximoGeracoes() * 0.25) {
+            limite = tamanhoPopulacao;
+        } else if (geracao < getNumeroMaximoGeracoes() * 0.75) {
+            limite = random.nextDouble() < 0.3 ? tamanhoPopulacao : tamanhoPopulacao / 2;
         } else {
-            pos = 1;
+            limite = random.nextDouble() < 0.3 ? tamanhoPopulacao : tamanhoPopulacao / 4;
         }
 
-        return populacaoIntermediaria.getIndivduo(pos);
+        // Selecionar dois indivíduos distintos
+        int indice1 = random.nextInt(limite);
+        int indice2;
+        do {
+            indice2 = random.nextInt(limite);
+        } while (indice2 == indice1);
+
+        Individuo individuo1 = populacao.getIndivduo(indice1);
+        Individuo individuo2 = populacao.getIndivduo(indice2);
+
+        // Retornar o indivíduo com maior aptidão
+        return (individuo1.getAptidao() >= individuo2.getAptidao()) ? individuo1 : individuo2;
     }
-    public static Individuo mutacao(Individuo individuo) {
+
+    public static Individuo mutacao(Individuo individuo, int geracaoAtual, int numeroMaximoGeracoes) {
         Random r = new Random();
         double[] cromossomo = individuo.getPesos();
 
+
+        double intensidadeMutacao = 1.0 - (double) geracaoAtual / numeroMaximoGeracoes;
+
         for (int i = 0; i < cromossomo.length; i++) {
-            cromossomo[i] += r.nextGaussian() * 100;
+            if (r.nextDouble() < getTaxaDeMutacao()) {
+                double perturbacao = r.nextGaussian() * intensidadeMutacao * cromossomo[i];
+                cromossomo[i] += perturbacao;
+            }
         }
 
         individuo.setPesos(cromossomo);
+        individuo.geraAptidao(dificuldade);
         return individuo;
     }
+
 
     public static double getTaxaDeCrossover() {
         return taxaDeCrossover;
