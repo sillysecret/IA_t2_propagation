@@ -14,13 +14,13 @@ public class Individuo {
     private Tabuleiro tabuleiro;
 
     public Individuo(boolean redeNeuralAleatoria, int difficultyLevel) {
-        pesos = new double[237];
+        pesos = new double[180];
         Random random = new Random();
 
         // Inicializa os pesos da rede neural aleatoriamente
         if (redeNeuralAleatoria) {
             for (int i = 0; i < pesos.length; i++) {
-                pesos[i] = random.nextInt(1000) ;
+                pesos[i] = random.nextInt(1000);
             }
         }
         if (redeNeuralAleatoria) {

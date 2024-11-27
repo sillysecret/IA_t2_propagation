@@ -3,6 +3,10 @@ package org.example.operacao;
 import org.example.dominio.Individuo;
 import org.example.dominio.Populacao;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -34,10 +38,44 @@ public class Algoritimo {
             populacao = Algoritimo.novaGeracao(populacao,geracao);
 
             if(geracao == getNumeroMaximoGeracoes()/2)
-                dificuldade = 5;
+                dificuldade = 2;
 
             if (geracao == (int)(getNumeroMaximoGeracoes() * 0.75))
-                dificuldade = 9;
+                dificuldade = 4;
+
+            if(geracao % 500 == 0){
+                //armazena os melhores pesos em um arquivo para serem usados posteriormente
+                double[] melhor = populacao.getIndivduo(0).getPesos();
+
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\vizzo\\Downloads\\IA_trab\\propagation\\src\\main\\java\\org\\example\\operacao\\melhores_pesos.txt", true))) {
+                    writer.write("Geração " + geracao + ":");
+                    writer.newLine();
+                    writer.write("Aptidaão do Melhor: " + populacao.getIndivduo(0).getAptidao());
+                    writer.newLine();
+                    writer.write(Arrays.toString(melhor));
+                    writer.newLine();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if(geracao % 2000 == 0){
+                for (int i = 0; i < populacao.getTamPopulacao(); i++) {
+                    double[] melhor = populacao.getIndivduo(i).getPesos();
+
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\vizzo\\Downloads\\IA_trab\\propagation\\src\\main\\java\\org\\example\\operacao\\melhores_pesos.txt", true))) {
+                        writer.write("Geração " + geracao + ":");
+                        writer.newLine();
+                        writer.write("Aptidaão individuo "+i+": " + populacao.getIndivduo(i).getAptidao());
+                        writer.newLine();
+                        writer.write(Arrays.toString(melhor));
+                        writer.newLine();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
 
             System.out.println("Geração " + geracao + ":");
             System.out.println("Melhor: " + populacao.getIndivduo(0).getAptidao() + " (" + populacao.getIndivduo(0).getAptidao() + ")");
@@ -49,14 +87,15 @@ public class Algoritimo {
             System.out.println();
             System.out.println("-------------------------------------");
 
-            if (populacao.getMediaAptidao() == 0) {
-                System.out.println("Melhor indivíduo: " + Arrays.toString(populacao.getIndivduo(0).getPesos()));
-                break;
-            }
+//            if (populacao.getMediaAptidao() == 0) {
+//                System.out.println("Melhor indivíduo: " + Arrays.toString(populacao.getIndivduo(0).getPesos()));
+//                break;
+//            }
 
 
         }
         System.out.println("Melhor indivíduo: " + Arrays.toString(populacao.getIndivduo(0).getPesos()));
+
         return populacao.getIndivduo(0).getPesos();
     }
 
@@ -102,10 +141,10 @@ public class Algoritimo {
 
         double[] cromossomo1 = pai1.getPesos();
         double[] cromossomo2 = pai2.getPesos();
-        double[] pesosFilho1 = new double[237];
+        double[] pesosFilho1 = new double[180];
 
-        for (int i = 0; i < 237; i++) {
-            pesosFilho1[i] = Math.sqrt(cromossomo1[i] * cromossomo2[i]);
+        for (int i = 0; i < 180; i++) {
+            pesosFilho1[i] = (cromossomo1[i] + cromossomo2[i]) / 2 + r.nextGaussian() * 0.1;
         }
 
         filhos.setPesos(pesosFilho1);
@@ -113,7 +152,6 @@ public class Algoritimo {
         filhos.geraAptidao(dificuldade);
         return filhos;
     }
-
 
     public static Individuo selecaoTorneio(Populacao populacao, int geracao) {
         Random random = new Random();
@@ -148,7 +186,7 @@ public class Algoritimo {
         double[] cromossomo = individuo.getPesos();
 
 
-        double intensidadeMutacao = 1.0 - (double) geracaoAtual / numeroMaximoGeracoes;
+        double intensidadeMutacao = 1000 - (double) geracaoAtual / numeroMaximoGeracoes;
 
         for (int i = 0; i < cromossomo.length; i++) {
             if (r.nextDouble() < getTaxaDeMutacao()) {
